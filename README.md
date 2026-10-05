@@ -1,16 +1,27 @@
-# React + Vite
+# Automated Expense Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Tailwind (Vite) · Express · MongoDB · Google OAuth + Gmail API
 
-Currently, two official plugins are available:
+Users sign in with Google, the server searches Gmail (read-only) for emails from Easypaisa, NayaPay, JazzCash and SadaPay, extracts the amount, and stores it. The dashboard filters by today / week / month / last 3 months / custom range, and groups the chart by day, week or month.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 1. Google Cloud setup
+1. Go to https://console.cloud.google.com and create a project.
+2. **APIs & Services → Library**: enable the **Gmail API**.
+3. **OAuth consent screen**: choose External, fill in the basics, add scope `.../auth/gmail.readonly`, and add your Gmail address under **Test users**.
+4. **Credentials → Create credentials → OAuth client ID → Web application**.
+   Authorized redirect URI: `http://localhost:5000/api/auth/google/callback`
+5. Copy the Client ID and Secret.
 
-## React Compiler
+> `gmail.readonly` is a restricted scope. While the app is in "Testing" mode it works for up to 100 test users (tokens expire every 7 days). Going public requires Google's verification.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 2. Run it
+```bash
+# MongoDB must be running locally (or use an Atlas URI)
+cd server && cp .env.example .env   # fill in Google keys + JWT_SECRET
+npm install && npm run dev          # needs Node 20.6+
 
-## Expanding the ESLint configuration
+cd ../client && npm install && npm run dev
+```
+Open http://localhost:5173
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
